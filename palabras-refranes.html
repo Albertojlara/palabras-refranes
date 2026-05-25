@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Palabras de Refranes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400&display=swap');
+
+  :root {
+    --cream: #fdf6ec;
+    --warm: #f5e6ce;
+    --brown: #6b4c2a;
+    --dark: #2c1a0e;
+    --accent: #c0392b;
+    --gold: #d4a84b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--cream);
+    background-image:
+      radial-gradient(ellipse at top left, #f0e0c8 0%, transparent 60%),
+      radial-gradient(ellipse at bottom right, #e8d5b0 0%, transparent 60%);
+    min-height: 100vh;
+    font-family: 'Lato', sans-serif;
+    color: var(--dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--brown);
+    text-align: center;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 32px rgba(107,76,42,0.10);
+    margin-bottom: 20px;
+  }
+
+  /* PALABRA ACTUAL */
+  .word-display {
+    text-align: center;
+    padding: 36px 20px;
+    background: linear-gradient(135deg, var(--brown), var(--dark));
+    border-radius: 16px;
+    margin-bottom: 20px;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .word-display::before {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(212,168,75,0.1);
+    top: -60px; right: -60px;
+  }
+
+  .word-label {
+    font-size: 0.72rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .current-word {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    color: white;
+    transition: all 0.4s ease;
+    opacity: 1;
+  }
+
+  .current-word.fade {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  .progress-text {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+    margin-top: 12px;
+  }
+
+  /* BARRA DE PROGRESO */
+  .progress-bar-wrap {
+    background: var(--warm);
+    border-radius: 8px;
+    height: 8px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--accent));
+    border-radius: 8px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* CONTROLES */
+  .controls {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-main {
+    background: linear-gradient(135deg, var(--accent), #a93226);
+    color: white;
+    padding: 16px 40px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(192,57,43,0.35);
+  }
+
+  .btn-main:active { transform: scale(0.96); }
+
+  .btn-secondary {
+    background: var(--warm);
+    color: var(--brown);
+    padding: 16px 24px;
+    border: 1.5px solid #e0c89a;
+  }
+
+  .btn-secondary:active { background: #e8d5b0; }
+
+  /* VELOCIDAD */
+  .speed-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .speed-label {
+    font-size: 0.82rem;
+    color: var(--brown);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    min-width: 80px;
+    text-align: right;
+  }
+
+  .speed-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--brown);
+    min-width: 50px;
+    text-align: center;
+  }
+
+  .speed-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--warm);
+    border: 1.5px solid #e0c89a;
+    color: var(--brown);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .speed-btn:active { background: #e8d5b0; }
+
+  /* LISTA DE PALABRAS */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--brown);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title span {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.75rem;
+    background: var(--warm);
+    color: var(--brown);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 400;
+  }
+
+  .word-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .word-tag {
+    background: var(--warm);
+    border: 1.5px solid #e0c89a;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.9rem;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+
+  .word-tag.active-tag {
+    background: var(--brown);
+    color: white;
+    border-color: var(--brown);
+  }
+
+  .word-tag .remove-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.5;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    transition: opacity 0.15s;
+  }
+  .word-tag .remove-btn:hover { opacity: 1; }
+
+  .add-word-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .add-input {
+    flex: 1;
+    border: 1.5px solid #e0c89a;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
+    color: var(--dark);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .add-input:focus { border-color: var(--gold); }
+
+  .btn-add {
+    background: var(--gold);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    transition: background 0.15s;
+  }
+  .btn-add:active { background: #b8922e; }
+
+  .finished-msg {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    text-align: center;
+    padding: 8px 0 4px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #e8d5b0;
+    margin: 4px 0 20px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Refranes</h1>
+<p class="subtitle">Ejercicio de palabras</p>
+
+<!-- DISPLAY PALABRA -->
+<div class="card">
+  <div class="word-display">
+    <div class="word-label">Palabra actual</div>
+    <div class="current-word" id="currentWord">—</div>
+    <div class="progress-text" id="progressText"></div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <!-- CONTROLES -->
+  <div class="controls">
+    <button class="btn btn-main" id="mainBtn" onclick="togglePlay()">▶ Iniciar</button>
+    <button class="btn btn-secondary" onclick="resetApp()">↺ Reiniciar</button>
+  </div>
+
+  <div id="finishedMsg" class="finished-msg" style="display:none;">¡Muy bien! 🎉 Todas las palabras completadas.</div>
+
+  <hr class="divider">
+
+  <!-- VELOCIDAD -->
+  <div class="speed-section">
+    <div class="speed-label">Segundos</div>
+    <button class="speed-btn" onclick="changeSpeed(-1)">−</button>
+    <div class="speed-value" id="speedVal">5</div>
+    <button class="speed-btn" onclick="changeSpeed(1)">+</button>
+  </div>
+</div>
+
+<!-- LISTA DE PALABRAS -->
+<div class="card">
+  <div class="section-title">
+    Mis palabras <span id="countBadge">5</span>
+  </div>
+
+  <div class="word-list" id="wordList"></div>
+
+  <div class="add-word-row">
+    <input class="add-input" id="newWordInput" type="text" placeholder="Agregar palabra..." maxlength="30"
+      onkeydown="if(event.key==='Enter') addWord()">
+    <button class="btn-add" onclick="addWord()">Agregar</button>
+  </div>
+</div>
+
+<script>
+  let words = ['Camarón', 'Madrugar', 'Agua', 'Diablo', 'Caballo'];
+  let currentIndex = -1;
+  let intervalId = null;
+  let isPlaying = false;
+  let seconds = 5;
+  let activeWordIndex = -1;
+
+  function renderWords() {
+    const list = document.getElementById('wordList');
+    list.innerHTML = '';
+    words.forEach((w, i) => {
+      const tag = document.createElement('div');
+      tag.className = 'word-tag' + (i === activeWordIndex ? ' active-tag' : '');
+      tag.innerHTML = `${w} <button class="remove-btn" onclick="removeWord(${i})" title="Eliminar">×</button>`;
+      list.appendChild(tag);
+    });
+    document.getElementById('countBadge').textContent = words.length;
+  }
+
+  function removeWord(i) {
+    if (isPlaying) return;
+    words.splice(i, 1);
+    renderWords();
+  }
+
+  function addWord() {
+    const input = document.getElementById('newWordInput');
+    const val = input.value.trim();
+    if (!val) return;
+    const cap = val.charAt(0).toUpperCase() + val.slice(1);
+    if (!words.includes(cap)) {
+      words.push(cap);
+      renderWords();
+    }
+    input.value = '';
+    input.focus();
+  }
+
+  function changeSpeed(delta) {
+    seconds = Math.max(1, Math.min(30, seconds + delta));
+    document.getElementById('speedVal').textContent = seconds;
+    if (isPlaying) {
+      clearInterval(intervalId);
+      intervalId = setInterval(nextWord, seconds * 1000);
+    }
+  }
+
+  function speak(text) {
+    try {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'es-ES';
+        u.rate = 0.9;
+        window.speechSynthesis.speak(u);
+      }
+    } catch(e) { console.warn('Speech error:', e); }
+  }
+
+  function cancelSpeech() {
+    try {
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+    } catch(e) {}
+  }
+
+  function showWord(word, index) {
+    const el = document.getElementById('currentWord');
+    el.classList.add('fade');
+    setTimeout(() => {
+      el.textContent = word;
+      el.classList.remove('fade');
+    }, 200);
+    activeWordIndex = index;
+    renderWords();
+    const pct = ((index + 1) / words.length) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${index + 1} de ${words.length}`;
+    speak(word);
+  }
+
+  function nextWord() {
+    currentIndex++;
+    if (currentIndex >= words.length) {
+      stopPlaying();
+      document.getElementById('currentWord').textContent = '✓';
+      document.getElementById('progressText').textContent = '';
+      document.getElementById('finishedMsg').style.display = 'block';
+      activeWordIndex = -1;
+      renderWords();
+      return;
+    }
+    showWord(words[currentIndex], currentIndex);
+  }
+
+  function togglePlay() {
+    if (isPlaying) {
+      pauseApp();
+    } else {
+      startApp();
+    }
+  }
+
+  function startApp() {
+    if (words.length === 0) return;
+    document.getElementById('finishedMsg').style.display = 'none';
+    isPlaying = true;
+    document.getElementById('mainBtn').textContent = '⏸ Pausar';
+    nextWord();
+    intervalId = setInterval(nextWord, seconds * 1000);
+  }
+
+  function pauseApp() {
+    clearInterval(intervalId);
+    isPlaying = false;
+    cancelSpeech();
+    document.getElementById('mainBtn').textContent = '▶ Continuar';
+  }
+
+  function stopPlaying() {
+    clearInterval(intervalId);
+    isPlaying = false;
+    document.getElementById('mainBtn').textContent = '▶ Iniciar';
+  }
+
+  function resetApp() {
+    clearInterval(intervalId);
+    cancelSpeech();
+    isPlaying = false;
+    currentIndex = -1;
+    activeWordIndex = -1;
+    document.getElementById('mainBtn').textContent = '▶ Iniciar';
+    document.getElementById('currentWord').textContent = '—';
+    document.getElementById('progressText').textContent = '';
+    document.getElementById('progressBar').style.width = '0%';
+    document.getElementById('finishedMsg').style.display = 'none';
+    renderWords();
+  }
+
+  renderWords();
+</script>
+</body>
+</html>
